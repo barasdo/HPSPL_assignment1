@@ -21,7 +21,9 @@
 
 **תשובת הצוות:**
 
-<!-- כתבו כאן. -->
+Out of 18 transmissions, 16 were valid and 2 were rejected. The transmissions show that Doofenshmirtz is planning "Operation Beershevanator" and wants the complete agent list before the machine starts. Plankton admits he allocated space for too few agents, and Evil Morty orders the team to hide agent 67 from the official report and tells them not to ask why the agent count and the report disagree. This is the most important finding for the next step: an agent is being hidden from the official records, so the investigation continues in the agent database. The other messages (Greta Thunberg looking for a seaport in Beer Sheva, the suspicious camels) are noise.
+
+Access code: `B7-M1-DWEEXECU`
 
 ### הבנה טכנית
 
@@ -29,7 +31,9 @@
 
 **תשובת הצוות:**
 
-<!-- כתבו כאן. -->
+Record from the evidence: `CONTROL|25|23|FRPD_NVS_SQZO_DCNB_RRDBBZ`
+
+Its structure is valid: it has exactly three separators, the sender and key are legal, and the message decodes without errors to `ACCESS_CODE_PART_TWO_EQSG`. However, the sum of the ASCII values of the decoded message modulo 97 is 22, while the record says the checksum is 23. Because of this mismatch, `process_transmission` prints `[INVALID]` and returns 0. This is exactly the case the checksum is meant to catch: the record looks legitimate and even decodes, but its content was forged or corrupted, so it cannot be trusted for extracting the code.
 
 ---
 
