@@ -70,7 +70,9 @@ Access code: `B7-M2-CUQHZRGO`
 
 **תשובת הצוות:**
 
-<!-- כתבו כאן. -->
+The Beershevanator will start at midnight. It will attack traffic control, access systems and city infrastructure, and Iran is paying for it. Doofenshmirtz connected a self-destruct button to the server, so we may be able to stop it remotely. Agent 67 told Evil Morty that his communication channel works on its own, and Evil Morty said the others should not know. Next step: fix the emergency controller before midnight.
+
+Completion code: `B7-M3-CDRAUGLI`
 
 ### הבנה טכנית
 
@@ -79,7 +81,9 @@ Access code: `B7-M2-CUQHZRGO`
 
 **תשובת הצוות:**
 
-<!-- כתבו כאן. -->
+1. A borrowed string (`const char *`) belongs to someone else. We can read it and copy it, but we must not free it or keep its address. The `MessageStore` owns its array and the text of every message, because we made our own copies. So the store is the one that frees them, with `store_free`.
+
+2. We must free everything that was already allocated and leave `dest` empty. If we don't, the memory is lost (a leak) and `dest` is left half-built. In our code, `store_free(dest)` does this.
 
 ---
 
