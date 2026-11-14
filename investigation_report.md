@@ -1,11 +1,11 @@
 # מבצע B7 — דוח חקירה
 
 **אל:** שירות הביטחון הכללי (שב״כ) ועיריית באר שבע  
-**סטודנט/ית 1 — שם מלא:** ____________________  
-**מספר זהות:** ____________________  
-**סטודנט/ית 2 — שם מלא (אם יש):** ____________________  
-**מספר זהות (אם יש):** ____________________  
-**תאריך:** ____________________
+**סטודנט/ית 1 — שם מלא:** ____דורון בראס________________  
+**מספר זהות:** _____________322754169_______  
+**סטודנט/ית 2 — שם מלא (אם יש):** _________יעל ברימר___________  
+**מספר זהות (אם יש):** _______211876008_____________  
+**תאריך:** _______14.11.2026_____________
 
 > זהו דוח פרטי המוגש לצוות הקורס. מספרי הזהות משמשים לאימות קודי הגישה האישיים, ומותר לכלול אותם רק בדוח זה — לא בקוד המקור, בקובצי הראיות או בפלט התוכניות.
 >
@@ -45,7 +45,9 @@ Its structure is valid: it has exactly three separators, the sender and key are 
 
 **תשובת הצוות:**
 
-<!-- כתבו כאן. -->
+Agent 67 is not in the official agent database, but he got access 8 times without permission. He reached BGU_CAMERAS and CONTROL_SYSTEM, and also Evil Morty's private communications. This means someone used a fake agent account to get into the systems, and Evil Morty is protecting it. Other events were normal: Greta Thunberg was denied 7 times on PORT_8080 and Mrs. Nora Beady was denied on BGU_CAMERAS, and both denials were correct.
+
+Access code: `B7-M2-CUQHZRGO`
 
 ### הבנה טכנית
 
@@ -54,7 +56,9 @@ Its structure is valid: it has exactly three separators, the sender and key are 
 
 **תשובת הצוות:**
 
-<!-- כתבו כאן. -->
+1. A local variable is deleted when the function ends, so its address would be wrong after that. The original array is still alive, so the pointer stays valid. Also, the caller can change the real agent through it.
+
+2. In `main.c`, `working` is a real array, so `sizeof` gives its full size and we can divide by the size of one element. In `copy_agents`, `dest` is only a pointer, so `sizeof(dest)` gives the size of a pointer (8 bytes) and not the size of the array. That is why the capacity is passed as a parameter.
 
 ---
 
