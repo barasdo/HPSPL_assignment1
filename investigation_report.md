@@ -95,7 +95,9 @@ Completion code: `B7-M3-CDRAUGLI`
 
 **תשובת הצוות:**
 
-<!-- כתבו כאן. -->
+We restored the emergency controller and the self-destruct interface. The required order is to prepare the emergency command, request authorization, and then execute it. The controller is working, but valid authorization is still missing, so the command was not executed.
+
+Access code: `B7-M4-DZTZXGTR`
 
 ### תיעוד התיקונים
 
@@ -103,19 +105,19 @@ Completion code: `B7-M3-CDRAUGLI`
 
 **שלב A:**
 
-<!-- תקלה | תיקון | בדיקה -->
+The original check used `length > capacity`, so it allowed copying when the text length equaled the buffer size, leaving no room for `'\0'`. We changed `>` to `>=`. For example, `"STOP"` needs 5 bytes, so a buffer of size 4 must be rejected and left empty. `make test-a` failed before the fix and passed afterward.
 
 **שלב B:**
 
-<!-- תקלה | תיקון | בדיקה -->
+The original check used `index > count`, so it accepted `index == count`, which is outside the valid range. We changed `>` to `>=`. For an array of 3 elements, index 3 must return `NULL`, while index 2 must return a pointer to the original element. `make test-b` failed before the fix and passed afterward.
 
 **שלב C:**
 
-<!-- תקלה | תיקון | בדיקה -->
+The original code passed `remaining` to `memmove`, but this is the number of commands, while `memmove` needs the number of bytes. We changed it to `remaining * sizeof(*commands)` so it copies whole commands. For example, removing B from `[A, B, C, D]` should leave `[A, C, D]`, reduce the count to 3, and clear the last slot. `make test-c` failed before the fix and passed afterward.
 
 **שלב D:**
 
-<!-- תקלה | תיקון | בדיקה -->
+The original code freed the command's text at the end of `controller_schedule`, even though it was still needed later. We removed this `free` and kept the one in `controller_execute_pending`, after the text is copied successfully. A scheduled command should keep its text until execution, and successful execution should free the command and set the pending pointer to `NULL`. `make test-d` failed before the fix and passed afterward.
 
 ### חקירת GDB אחת
 
@@ -123,7 +125,7 @@ Completion code: `B7-M3-CDRAUGLI`
 
 **תשובת הצוות:**
 
-<!-- כתבו כאן. -->
+We used GDB to stop in `controller_find_unit` when `index == count`. We used `break` to set the breakpoint and `run` to start the test. With `info args`, we saw that `count` and `index` were both 3. Using `print`, we checked that `index > count` was false, while `index >= count` was true. Then we used `finish` and saw that the function returned a pointer instead of `NULL`. This helped us understand why the check needed to be `>=`.
 
 ---
 
@@ -135,7 +137,11 @@ Completion code: `B7-M3-CDRAUGLI`
 
 **תשובת הצוות:**
 
-<!-- כתבו כאן. -->
+We got authorization through PORT_8080. The final messages revealed that Plankton had given Greta administrator privileges and left the emergency authorization interface connected to her session. We used this authorization to submit the request. The Beershevanator was destroyed and Be'er Sheva was saved.
+
+We also learned that the attack was a distraction for Agent 67's attempt to access a classified project at Ben-Gurion University. It is still unknown whether the attempt succeeded or what information was exposed. Evil Morty is still at large, and Agent 67's real identity is unknown.
+
+Completion code: `B7-M5-RLBZFXAM`
 
 ### הבנה טכנית
 
@@ -145,4 +151,8 @@ Completion code: `B7-M3-CDRAUGLI`
 
 **תשובת הצוות:**
 
-<!-- כתבו כאן. -->
+1. A pending request has `approved == 0`, while an approved request has `approved == 1`. Approval must come through `mission5_authorize_via_port`. Changing the field ourselves would skip the authorization process. The authorization record is copied by value into the request, so changing this copy does not change the original record in the evidence.
+
+2. The device name and the steps are copied into separately allocated memory. The mode and action are copied into the request's arrays, and the authorization record is copied by value. If we only saved pointers to the evidence, changing or freeing the evidence could change the request or leave it with invalid pointers.
+
+3. A request with steps in the wrong order must not be submitted. `validate_emergency_request` checks that there are exactly three steps in the order prepare, request authorization, and execute. If the check fails, `main` goes to cleanup without submitting the request. Without this check, execution could be requested before authorization.
