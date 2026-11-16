@@ -107,7 +107,6 @@ int main(void)
     Mission6Result result = {0};
     int success = 0;
 
-    /* TODO 1: understand and verify how load_packets prepares the evidence. */
     if (!load_packets(PACKET_PATH, &key, &words, &packets, &packet_count)) {
         fputs("Could not load Mission 6 packet evidence.\n", stderr);
         goto cleanup;
@@ -115,27 +114,41 @@ int main(void)
 
     result.numeric_value = words[0];
     result.packet_count = packet_count;
-    (void)key;
-    (void)result;
-    /* TODO 2: format numeric_value as 16 bits. */
-    /* TODO 3: decode channels 1, 2, and 3 into result.fragments. */
+    if (!format_binary(result.numeric_value, 16, result.binary,
+                       sizeof(result.binary))) {
+        goto cleanup;
+    }
+    for (int i = 0; i < 3; i++) {
+        if (!decode_channel(packets, packet_count, (uint8_t)(i + 1), key,
+                            result.fragments[i], sizeof(result.fragments[i]))) {
+            goto cleanup;
+        }
+    }
 
     meetings = fopen(MEETING_PATH, "rb");
     if (meetings == NULL) {
         fputs("Could not open Mission 6 meeting evidence.\n", stderr);
         goto cleanup;
     }
-    /* TODO 4: find the one confirmed meeting, then close the file. */
+    if (!find_confirmed_meeting(meetings, &result.meeting)) {
+        goto cleanup;
+    }
     result.raw_signed = (uint8_t)result.meeting.minute_adjust;
-    /* TODO 2: decode the meeting's raw_signed correction as 8 bits. */
+    if (!decode_twos_complement(result.raw_signed, 8, &result.signed_value)) {
+        goto cleanup;
+    }
     if (fclose(meetings) != 0) {
         meetings = NULL;
         goto cleanup;
     }
     meetings = NULL;
 
-    /* TODO 5: resolve the meeting's location from channel 0xE. */
-    /* TODO 6: submit the fully computed result with mission6_report_success. */
+    if (!resolve_location(packets, packet_count, key,
+                          result.meeting.location_code, result.location,
+                          sizeof(result.location))) {
+        goto cleanup;
+    }
+    success = mission6_report_success(PACKET_PATH, MEETING_PATH, &result);
     if (!success) {
         fputs("Mission 6 evidence could not be fully verified.\n", stderr);
         goto cleanup;
